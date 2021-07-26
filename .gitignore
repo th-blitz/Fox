@@ -1,0 +1,5 @@
+# ignore folders
+python38\
+python39\
+__pycache__\
+fox_envs\

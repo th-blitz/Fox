@@ -1,0 +1,60 @@
+@echo off
+
+set arg1=%1
+
+if not defined arg1 (
+set arg1=39
+)
+
+set exiting=_no_
+
+if %arg1%==38 (
+set pyversion=python38
+) else if %arg1%==39 (
+set pyversion=python39
+) else if %arg1%==exit (
+set exiting=exit
+)
+
+echo - selected %pyversion%
+
+set foxpath=%~dp0
+
+set foxpath=%foxpath:\foxy\=%
+
+set foxscripts=\fox_scripts
+
+set foxscripts=%foxpath%%foxscripts%
+
+set pythondefault=\python\%pyversion%
+set pythondefault=%foxpath%%pythondefault%
+
+set pythonscripts=\python\%pyversion%\Scripts
+set pythonscripts=%foxpath%%pythonscripts%
+
+if not defined oldpath set "oldpath=%PATH%"
+
+set "PATH=%oldpath%"
+
+set "PATH=%foxscripts%;%PATH%"
+set "PATH=%pythondefault%;%PATH%"
+set "PATH=%pythonscripts%;%PATH%"
+
+set farg=(F_%arg1%)
+
+if not defined oldprompt set oldprompt=%PROMPT%
+if not defined oldfarg set oldfarg=%farg%
+
+if not defined fprompt set PROMPT=%farg% %PROMPT%
+
+if defined fprompt call set PROMPT=%%PROMPT:%oldfarg%=%farg%%%
+set oldfarg=%farg%
+set fprompt=%PROMPT%
+
+if %exiting%==exit (
+set "PATH=%oldpath%"
+set PROMPT=%oldprompt%
+set fprompt=
+set farg=
+set oldfarg=
+)
