@@ -39,6 +39,18 @@ if __name__ == '__main__':
 
     command_team_list = ['init']
 
+    permission = ['list_versions', 'change_version','install', 'remove', 'melt']
+
+    if command in permission:
+
+        import fox_info
+
+        if fox_info.check_for_active_env() == None:
+
+            command = None
+            print('- activate env to execute this command')
+            access = False
+
     if command in command_team_list:
 
         import fox_team
@@ -153,7 +165,7 @@ if __name__ == '__main__':
         print('- FOX command unlisted, enter $ fox ( to get a list of all the commands )')
 
     elif access == False:
-        access_message = 'none'
+        access_message = '- access denied'
         print(f'{access_message}')
 
     else:

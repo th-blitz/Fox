@@ -1,68 +1,105 @@
 
+# import time
+# import sys
 
-dict = {
-'admin' : {
-    'address': '',
-    'public_key': '',
-    "env_name" : 'base',
-    "date_and_time_of_creation": '',
-    "python_version": '',
-    "hash_type": 'sha3_256',
-    "ecda_curve": 'SECP256k1',
-    "team_length": 1,
-},
 
-"team_members": [
-    {
-        'info' : {
-            'member_address' : '',
-            'member_public_key' : None,
-        },
+import fox_secure
 
-        'member_auth' : {
-            'member_info_hash': '',
-            'member_info_signature': None,
-        },
+# from sympy import factorint
+#
+# for i in ['2HYap9kFuupv5RYdDL5xEiScXuR4zX3tgRjYZ9rvTyiNJ8', '6g7ej9yZjpqwn1apatS8rHGmV7u6o5gE1rhTP5gqVLMUa5w']:
+#     res = fox_secure.hexbase58(i)
+#     res = int(res, 16)
+#     print(res)
+#     res = factorint(res)
+#     print(res)
 
-        'member_permission': '', #locked #unlocked #manager #admin
+github_url = r'https://github.com/ThBlitz'
+key, public_key, public_address = fox_secure.fox_address_generator(github_url, strength = 4)
+url, address, checksum, strength = fox_secure.decode_fox_public_address(public_address)
 
-        'admin_auth' : {
-            'hash' : '',
-            'admin_signature' : '',
-        },
+private_key_base58 = fox_secure.hexbase58('fa' + key)
+public_key_base58 = fox_secure.hexbase58('fb' + public_key)
 
-        "versions": [
-            {
-                'info': {
-                    'version_number': 0,
-                    'pip_command': '',
-                    'freeze': '',
-                    'list': '',
-                    'date_and_time_added': ''
-                },
+print(private_key_base58)
+print(public_key_base58)
+print(public_address)
+print(url, address, checksum, strength)
 
-                'auth': {
-                    'hash': '',
-                    'signature': '',
-                    'address': ''
-                }
-            }
-        ],
-    }
-],
 
-'admin_auth': {
-    'hash': [],
-    'signature': [],
-},
+# animation_1 = r"/-\|/"
+#
+# for i in range(100):
+#     time.sleep(0.04)
+#     sys.stdout.write("\r" + f"[...{animation_1[i % len(animation_1)]}]")
+#     sys.stdout.flush()
+# print ("done")
 
 
 
-
-
-
-
-
+# dict = {
+# 'admin' : {
+#     'address': '',
+#     'public_key': '',
+#     "env_name" : 'base',
+#     "date_and_time_of_creation": '',
+#     "python_version": '',
+#     "hash_type": 'sha3_256',
+#     "ecda_curve": 'SECP256k1',
+#     "team_length": 1,
+# },
+#
+# "team_members": [
+#     {
+#         'info' : {
+#             'member_address' : '',
+#             'member_public_key' : None,
+#         },
+#
+#         'member_auth' : {
+#             'member_info_hash': '',
+#             'member_info_signature': None,
+#         },
+#
+#         'member_permission': '', #locked #unlocked #manager #admin
+#
+#         'admin_auth' : {
+#             'hash' : '',
+#             'admin_signature' : '',
+#         },
+#
+#         "versions": [
+#             {
+#                 'info': {
+#                     'version_number': 0,
+#                     'pip_command': '',
+#                     'freeze': '',
+#                     'list': '',
+#                     'date_and_time_added': ''
+#                 },
+#
+#                 'auth': {
+#                     'hash': '',
+#                     'signature': '',
+#                     'address': ''
+#                 }
+#             }
+#         ],
+#     }
+# ],
+#
+# 'admin_auth': {
+#     'hash': [],
+#     'signature': [],
+# },
+#
+#
+#
+#
+#
+#
+#
+#
 
 
 
