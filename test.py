@@ -2,9 +2,6 @@
 # import time
 # import sys
 
-
-import fox_secure
-
 # from sympy import factorint
 #
 # for i in ['2HYap9kFuupv5RYdDL5xEiScXuR4zX3tgRjYZ9rvTyiNJ8', '6g7ej9yZjpqwn1apatS8rHGmV7u6o5gE1rhTP5gqVLMUa5w']:
@@ -14,18 +11,70 @@ import fox_secure
 #     res = factorint(res)
 #     print(res)
 
+import aes
+import base64
+import secrets
+import fox_secure
+
 github_url = r'https://github.com/ThBlitz'
-key, public_key, public_address = fox_secure.fox_address_generator(github_url, strength = 4)
+key, public_key, public_address = fox_secure.fox_address_generator(github_url, strength = None)
 url, address, checksum, strength = fox_secure.decode_fox_public_address(public_address)
 
-private_key_base58 = fox_secure.hexbase58('fa' + key)
-public_key_base58 = fox_secure.hexbase58('fb' + public_key)
+# private_key_base58 = fox_secure.hexbase58('fa' + key)
+# public_key_base58 = fox_secure.hexbase58('fb' + public_key)
 
-print(private_key_base58)
-print(public_key_base58)
+print(key)
+print(public_key)
 print(public_address)
 print(url, address, checksum, strength)
 
+salt = secrets.randbits(256)
+
+pin = 5665
+
+aes_key = salt - pin
+
+aes_key = fox_secure.hexbase58(aes_key)
+
+message  =  key
+
+messg_k , iv = fox_secure.aes_encrypt_cbc(aes_key , message)
+
+print('private : ' , messg_k)
+# print(iv)
+# print(aes_key)
+
+message = public_key
+
+messg_p , iv = fox_secure.aes_encrypt_cbc(aes_key , message, iv)
+
+print('public : ' , messg_p)
+
+message = fox_secure.aes_decrypt_cbc(aes_key, messg_k , iv)
+
+if message == key :
+    print('private : True')
+else:
+    print('False')
+
+message = fox_secure.aes_decrypt_cbc(aes_key, messg_p , iv)
+
+if message == public_key:
+    print('public : True')
+else:
+    print('False')
+
+
+
+# from Crypto.Cipher import AES
+# import secrets
+#
+# bits = secrets.randbits(128)
+# key = b'Sixteen byte key'
+# cipher = AES.new(key, AES.MODE_EAX)
+#
+# nonce = cipher.nonce
+# ciphertext, tag = cipher.encrypt_and_digest(data)
 
 # animation_1 = r"/-\|/"
 #

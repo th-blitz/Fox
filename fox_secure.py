@@ -7,6 +7,7 @@ import ecdsa
 import json
 import sys
 import time
+import aes
 
 def sha3_256(data):
     hash = hashlib.sha3_256(data.encode('utf-8')).hexdigest()
@@ -33,7 +34,11 @@ def sha512(data):
     return hash
 
 def generate_random_bits(bit_length = 256):
-    bits = secrets.randbits(256)
+
+    bits = secrets.randbits(bit_length)
+    if bits.bit_length() != bit_length :
+        bits = generate_random_bits(bit_length)
+
     return bits
 
 def generate_fox_private_key(key_length = 256):
@@ -81,7 +86,7 @@ def hexbase58(key):
             address = None
 
     elif isinstance(key, int):
-        address = base58.b58decode_int(key).decode('utf-8')
+        address = base58.b58encode_int(key).decode('utf-8')
 
     return address
 
@@ -148,7 +153,7 @@ def verify_signature(fox_public_key, signature, data_hash, curve = 'SECP256k1'):
 
     return ans
 
-def fox_address_generator(github_url , curve = 'SECP256k1', strength = None):
+def fox_address_generator(github_url , curve = 'SECP256k1', strength = None, append_f_bytes = True):
 
     if strength == None:
         for i in range(100):
@@ -173,7 +178,7 @@ def fox_address_generator(github_url , curve = 'SECP256k1', strength = None):
 
         while(True):
 
-            key, public_key, public_address = fox_address_generator(github_url, curve)
+            key, public_key, public_address = fox_address_generator(github_url, curve, append_f_bytes = False)
             url, address, checksum, temp_strength = decode_fox_public_address(public_address)
             count += 1
 
@@ -195,5 +200,68 @@ def fox_address_generator(github_url , curve = 'SECP256k1', strength = None):
                 print(f'- Time taken : {int(now - before)}s')
                 break
 
+    if append_f_bytes == True:
+
+        print("- appended bytes --> b'fa' + hex_private_key | b'fb' + hex_public_key --> base58")
+        key = hexbase58('fa' + key)
+        public_key = hexbase58('fb' + public_key)
 
     return key , public_key , public_address
+
+def get_byte_length_for_aes(key_bits):
+
+    bit_len = key_bits.bit_length()
+
+    if 256 >= bit_len > 192:
+
+        byte_len = 32
+
+    elif 192 >= bit_len > 128:
+
+        byte_len = 24
+
+    elif 128 >= bit_len > 0 :
+
+        byte_len = 16
+
+    else:
+
+        byte_len = int(bit_len/8)
+
+    return byte_len
+
+def aes_encrypt_cbc(key, message, iv = None):
+
+    if iv == None:
+        iv = generate_random_bits(bit_length = 128).to_bytes(16, 'big')
+    else:
+        iv = hexbase58(iv)
+        iv = int(iv, 16)
+        iv = iv.to_bytes(16, 'big')
+
+    key_hex = hexbase58(key)
+    key_bits = int(key_hex, 16)
+    key_bytes = key_bits.to_bytes( get_byte_length_for_aes(key_bits) , 'big')
+    message = message.encode('utf-8')
+
+    encrypted_message = aes.AES(key_bytes).encrypt_cbc(message , iv)
+    encrypted_message = base64.b64encode(encrypted_message).decode('utf-8')
+    iv = int.from_bytes(iv, 'big')
+    iv = hexbase58(iv)
+
+    return encrypted_message, iv
+
+def aes_decrypt_cbc(key, encrypted_message, iv):
+
+    key_hex = hexbase58(key)
+    key_bits = int(key_hex, 16)
+    key_bytes = key_bits.to_bytes( get_byte_length_for_aes(key_bits) , 'big')
+
+    iv_hex = hexbase58(iv)
+    iv_bits = int(iv_hex, 16)
+    iv = iv_bits.to_bytes(16, 'big')
+
+    encrypted_message = base64.b64decode(encrypted_message.encode('utf-8'))
+    message = aes.AES(key_bytes).decrypt_cbc(encrypted_message, iv).decode('utf-8')
+
+    return message

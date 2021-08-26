@@ -11,14 +11,19 @@ fox_data_path = os.path.join(fox_folder_path, 'fox_data')
 fox_scripts_path = os.path.join(fox_folder_path, 'fox_scripts')
 fox_package_vault = os.path.join(fox_folder_path, 'fox_package_vault')
 
-def install(package, dont_register = False):
+def install(package, version = None, dont_register = False):
 
-    pip_command = ['pip','install',f'{package}']
+    if version != None:
+        pip_command = ['pip','install',f'{package}=={version}']
+
+    else:
+        pip_command = ['pip','install',f'{package}']
     access = PIP_FIREWALL.access_check( pip_command )
 
     if access == True :
 
         subprocess.run(pip_command)
+        print(pip_command)
 
         if dont_register == False:
             ' '.join(pip_command)

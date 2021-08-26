@@ -126,7 +126,7 @@ if __name__ == '__main__':
         import fox_package
 
         if command == 'install':
-            fox_package.install(arg_2)
+            fox_package.install(package = arg_2, version = arg_3, dont_register = False)
 
         elif command == 'remove':
             fox_package.remove(arg_2)

@@ -1,6 +1,6 @@
 #cloned from https://github.com/keis/base58/blob/master/base58.py
 
-'''Base58 encoding 
+'''Base58 encoding
 Implementations of Base58 and Base58Check endcodings that are compatible
 with the bitcoin network.
 '''
